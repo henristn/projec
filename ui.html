@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="ui.css">
+</head>
+<body style="display: none;">
+
+    <aside>
+        <div class="category">
+            <div class="item" data-type="mask" onclick="selectPart(this)" data-idpart="mascara"><img src="./assets/mask.svg"></div>
+            <div class="item" data-type="arms" onclick="selectPart(this)" data-idpart="mao"><img src="assets/hand.svg"></div>
+            <div class="item" data-type="tshirt" onclick="selectPart(this)" data-idpart="camisa"><img src="assets/shirt.svg"></div>
+            <div class="item" data-type="shield" onclick="selectPart(this)" data-idpart="colete"><img src="assets/armour.png"></div>
+            <div class="item" data-type="torso" onclick="selectPart(this)" data-idpart="jaqueta"><img src="assets/jacket.svg"></div>
+            <div class="item" data-type="pants" onclick="selectPart(this)" data-idpart="calca"><img src="assets/pants.svg"></div>
+            <div class="item" data-type="ear" onclick="selectPart(this)" data-idpart="brinco"><img src="assets/earrings.svg"></div>
+            <div class="item" data-type="hat" onclick="selectPart(this)" data-idpart="bone"><img src="assets/hat.svg"></div>
+            <div class="item" data-type="glass" onclick="selectPart(this)" data-idpart="oculos"><img src="assets/sunglasses.svg"></div>
+            <div class="item" data-type="bracelet" onclick="selectPart(this)" data-idpart="bracelete"><img src="assets/bracelet.svg"></div>
+            <div class="item" data-type="shoes" onclick="selectPart(this)" data-idpart="sapato"><img src="assets/sneakers.svg"></div>
+            <div class="item" data-type="accessory" onclick="selectPart(this)" data-idpart="gravata"><img src="assets/necklace.svg"></div>
+            <div class="item" data-type="mochila" onclick="selectPart(this)" data-idpart="mochila"><img src="assets/bag.svg"></div>
+            <div class="item" data-type="watch" onclick="selectPart(this)" data-idpart="relogio"><img src="assets/watch.svg"></div>
+        </div>
+
+        <flex>
+            <header>
+                <label>Loja De Roupas</label>
+            </header>
+            <div class="search">
+                <div class="icon"><i class="fal fa-search"></i></div>
+                <input id="search" placeholder="pesquisar numeração">
+            </div>
+            <section id="listagem"></section>
+
+            <footer>
+                <div class="actions">
+                    <button id="cart" onClick="paymentSkinShop()">salvar</button>
+                </div>
+            </footer>
+        </flex>
+
+        <div class="colors" data-augmented-ui="br-clip">
+            <header>cores</header>
+            <div class="color-content" id="listaCores"></div>
+        </div>
+        
+        
+    </aside>   
+
+    <cam>
+        <div class="item" id="esquerda"><i class="fas fa-chevron-left"></i></div>
+        <div class="item" id="maos"><img src="https://cdn.discordapp.com/attachments/712813090952970346/802647468961300496/protest.png"></div>
+        <div class="item" id="direita"><i class="fas fa-chevron-right"></i></div>
+    </cam>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script src="font.js"></script>
+    <script src="ui.js"></script>
+</body>
+</html>
