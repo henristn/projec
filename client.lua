@@ -31,84 +31,68 @@ local handsup = false
 local cooldown = 0
 local oldData = {}
 
-
-
 local parts = {
-    mascara = 1,
-    mao = 3,
-    calca = 4,
-    mochila = 5,
-    sapato = 6,
-    gravata = 7,
-    camisa = 8,
-    colete = 9,
-    jaqueta = 11,
-    bone = "p0",
-    oculos = "p1",
-    brinco = "p2",
-    relogio = "p6",
-    bracelete = "p7"
+    ["mascara"] = 1,
+    ["mao"] = 3,
+    ["calca"] = 4,
+    ["mochila"] = 5,
+    ["sapato"] = 6,
+    ["gravata"] = 7,
+    ["camisa"] = 8,
+    ["colete"] = 9,
+    ["jaqueta"] = 11,
+    ["bone"] = "p0",
+    ["oculos"] = "p1",
+    ["brinco"] = "p2",
+    ["relogio"] = "p6",
+    ["bracelete"] = "p7"
 }
 
-local carroCompras = {
-    mascara = false,
-    mao = false,
-    calca = false,
-    mochila = false,
-    sapato = false,
-    gravata = false,
-    camisa = false,
-    colete = false,
-    jaqueta = false,
-    bone = false,
-    oculos = false,
-    brinco = false,
-    relogio = false,
-    bracelete = false
-}
+local playerOriginalHeading = nil
 
-
-
-function SetCameraCoords()
+function SetCameraCoords(create)
     local ped = PlayerPedId()
-	RenderScriptCams(false, false, 0, 1, 0)
-    DestroyCam(cam, false)
-    
-	if not DoesCamExist(cam) then
+
+    if create then
+        playerOriginalHeading = GetEntityHeading(ped)
+        SetEntityHeading(ped, 180.0)
+
+        if cam then
+            DestroyCam(cam, false)
+            cam = nil
+        end
+
         cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
-		SetCamActive(cam, true)
+        SetCamActive(cam, true)
         RenderScriptCams(true, true, 500, true, true)
 
         pos = GetEntityCoords(PlayerPedId())
         camPos = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 2.0, 0.0)
         SetCamCoord(cam, camPos.x, camPos.y, camPos.z+0.75)
         PointCamAtCoord(cam, pos.x, pos.y, pos.z+0.15)
+    else
+        RenderScriptCams(false, true, 0, true, true)
+        if cam then
+            DestroyCam(cam, false)
+            cam = nil
+        end
+        SetEntityHeading(ped, playerOriginalHeading)
     end
-
 end
 
-function DeleteCam()
-	SetCamActive(cam, false)
-	RenderScriptCams(false, true, 0, true, true)
-	cam = nil
-end
+local ped = PlayerPedId()
+local model = GetEntityModel(ped)
 
 RegisterNUICallback("changePart", function(data, cb)
     dataPart = parts[data.part]
-    local ped = PlayerPedId()
-    if GetEntityModel(ped) == GetHashKey("mp_m_freemode_01") then
-        SendNUIMessage({ 
-            changeCategory = true, 
-            sexo = "Male", prefix = "M", 
-            drawa = vRP.getDrawables(dataPart), category = dataPart,
-        })
-    elseif GetEntityModel(ped) == GetHashKey("mp_f_freemode_01") then 
-        SendNUIMessage({ 
-            changeCategory = true, 
-            sexo = "Female", prefix = "F", 
-            drawa = vRP.getDrawables(dataPart), category = dataPart,
-        })
-    end
+    local gender = model == GetHashKey("mp_m_freemode_01") and "male" or "female"
+    SendNUIMessage({ 
+        changeCategory = true, 
+        sexo = gender, 
+        prefix = gender == "male" and "M" or "F", 
+        drawa = vRP.getDrawables(dataPart), 
+        category = dataPart,
+    })
 end)
 
 RegisterNUICallback("updateColor", function(data, cb)
@@ -353,19 +337,16 @@ RegisterNUICallback("reset", function(data, cb)
     oldData = {}
     closeGuiLojaRoupa()
     ClearPedTasks(PlayerPedId())
-   -- vSERVER.setInstance(false)
 end)
 
 function closeGuiLojaRoupa()
     local ped = PlayerPedId()
-    DeleteCam()
+    SetCameraCoords(false)
     SetNuiFocus(false, false)
     SendNUIMessage({ openLojaRoupa = false })
     FreezeEntityPosition(ped, false)
     SetEntityInvincible(ped, false)
-   -- PlayerReturnInstancia()
     SendNUIMessage({ action = "setPrice", price = 0, typeaction = "remove" })
-    --vSERVER.setInstance(false)
     
     in_loja = false
     noProvador = false
@@ -392,38 +373,27 @@ function closeGuiLojaRoupa()
 
 end
 
------------------------------------------------------------------------------------------------------------------------------------------
--- SAVESKIN
------------------------------------------------------------------------------------------------------------------------------------------
 function SaveSkin()
 	oldData = {}
 	vSERVER.updateClothes(getCustomization())
 end
------------------------------------------------------------------------------------------------------------------------------------------
--- SAVESKIN 2
------------------------------------------------------------------------------------------------------------------------------------------
+
 function cO.updateClothes()
 	vSERVER.updateClothes(getCustomization())
 end
------------------------------------------------------------------------------------------------------------------------------------------
--- SAVESKIN 3
------------------------------------------------------------------------------------------------------------------------------------------
+
 RegisterNetEvent("clothes:updateClothes")
 AddEventHandler("clothes:updateClothes", function()
 	vSERVER.updateClothes(getCustomization())
 end)
------------------------------------------------------------------------------------------------------------------------------------------
--- SAVESKIN 3
------------------------------------------------------------------------------------------------------------------------------------------
+
 RegisterNetEvent("vrp_skinshop:skinData")
 AddEventHandler("vrp_skinshop:skinData",function(status)
 	if status ~= "clean" then
 		vRP.setClothes(status)
 	end
 end)
------------------------------------------------------------------------------------------------------------------------------------------
--- SAVESKIN
------------------------------------------------------------------------------------------------------------------------------------------
+
 function getCustomization()
 	local ped = PlayerPedId()
 	local custom = {}
@@ -492,9 +462,7 @@ AddEventHandler('onResourceStop', function(resource)
         closeGuiLojaRoupa()
     end
 end)
------------------------------------------------------------------------------------------------------------------------------------------
--- ROTATE
------------------------------------------------------------------------------------------------------------------------------------------
+
 RegisterNUICallback("rotate",function(data,cb)
 	local ped = PlayerPedId()
 	local heading = GetEntityHeading(ped)
@@ -504,9 +472,7 @@ RegisterNUICallback("rotate",function(data,cb)
 		SetEntityHeading(ped,heading - 10)
 	end
 end)
------------------------------------------------------------------------------------------------------------------------------------------
--- HANDSUP
------------------------------------------------------------------------------------------------------------------------------------------
+
 RegisterNUICallback("handsup",function(data,cb)
     local ped = PlayerPedId()
     if IsEntityPlayingAnim(ped,"random@mugging3","handsup_standing_base",3) then
@@ -516,9 +482,7 @@ RegisterNUICallback("handsup",function(data,cb)
 		vRP._playAnim(true,{"random@mugging3","handsup_standing_base"},false)
     end
 end)
------------------------------------------------------------------------------------------------------------------------------------------
--- ALTERNATIVE:UPDATECLOTHES
------------------------------------------------------------------------------------------------------------------------------------------
+
 RegisterNetEvent("updateRoupas")
 AddEventHandler("updateRoupas",function(custom)
 	local ped = PlayerPedId()
